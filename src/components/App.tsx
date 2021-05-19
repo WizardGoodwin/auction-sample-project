@@ -50,23 +50,25 @@ const App:FC = () => {
     setErrorsCount(0);
   }
 
-
   // HOOKS
 
   useEffect(() => {
-    setIsLoading(true);
     let timerId: ReturnType<typeof setTimeout>;
 
-    if (errorsCount === 0) {
-      makeApiCall();
-    } else {
-      timerId = setTimeout(makeApiCall, 1000)
+    if (!winner) {
+      setIsLoading(true);
+
+      if (errorsCount === 0) {
+        makeApiCall();
+      } else {
+        timerId = setTimeout(makeApiCall, 1000)
+      }
     }
 
     return () => {
       if (timerId) clearTimeout(timerId);
     }
-  }, [errorsCount, makeApiCall])
+  }, [errorsCount, makeApiCall, winner])
 
   // RENDER
 
