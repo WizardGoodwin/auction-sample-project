@@ -8,3 +8,5 @@ export const BETS: CompanyBet[] = [
   { name: 'Famous Company', sum: 120.01 },
   { name: 'Noname Company', sum: 67 },
 ]
+
+export const WIN_PROBABILITY = 5;
