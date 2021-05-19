@@ -1,16 +1,32 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
-import { Button, CircularProgress, Grid, Typography } from "@material-ui/core";
+import { Button, CircularProgress, Grid, makeStyles, Typography } from "@material-ui/core";
 
 import { mockApiCall } from "../shared/api";
 import { getWinner } from "../shared/helpers";
 
+const useStyles = makeStyles({
+  loaderContainer: {
+    textAlign: 'center'
+  },
+  loaderIcon: {
+    marginTop: 20,
+    marginBottom: 20
+  },
+  refreshBtn: {
+    marginTop: 20,
+  }
+});
+
 const App:FC = () => {
 
+ const classes = useStyles();
  const [winner, setWinner] = useState<string | null>(null);
  const [isLoading, setIsLoading] = useState<boolean>(false);
  const [error, setError] = useState<string | null>(null);
  const [errorsCount, setErrorsCount] = useState<number>(0);
+
+ // METHODS
 
  const makeApiCall = useCallback(() => {
    mockApiCall()
@@ -26,7 +42,16 @@ const App:FC = () => {
          setIsLoading(false);
        }
      })
-  }, [errorsCount])
+  }, [errorsCount]);
+
+  const refresh = () => {
+    setWinner(null);
+    setError(null);
+    setErrorsCount(0);
+  }
+
+
+  // HOOKS
 
   useEffect(() => {
     setIsLoading(true);
@@ -43,6 +68,8 @@ const App:FC = () => {
     }
   }, [errorsCount, makeApiCall])
 
+  // RENDER
+
   return (
     <Grid container
           direction="column"
@@ -50,19 +77,30 @@ const App:FC = () => {
           alignItems="center"
     >
       {isLoading && (
-        <Grid direction="column"
-              justify="center"
-              alignItems="center"
-              style={{ textAlign: 'center'}}
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="center"
+          className={classes.loaderContainer}
         >
           <Typography>Получаем данные с сервера...</Typography>
-          <CircularProgress style={{ marginTop: 20, marginBottom: 20 }} />
+          <CircularProgress className={classes.loaderIcon}/>
           <Typography>{`Количество оставшихся попыток: ${errorsCount}/5`}</Typography>
         </Grid>
       )}
       {winner && <Typography>Победитель аукциона: {winner}</Typography>}
       {error && <Typography>{error}</Typography>}
-      <Button>Повторить</Button>
+      {(winner || error) && (
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.refreshBtn}
+          onClick={refresh}
+        >
+          Повторить
+        </Button>
+      )}
     </Grid>
   );
 };
